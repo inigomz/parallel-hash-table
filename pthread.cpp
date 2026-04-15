@@ -1,91 +1,53 @@
-621 Frida Kiriakos
-984 Derek Louie
-503 Philip Huynh
-204 Kyle Meyerhardt
-74 Noemi Quezada
-56 James Murphy
-400 Radley Obligacion
-132 Ahdel Rahimi
-196 Martin Rodriguez
-903 Ali Mahmud
-460 Dhanshri Sharma
-13 David Vu
-421 Joel Pedroza
-130 Brian Chung
-735 Stevie Baltazar
-143 Eshan Agheda
-549 Eric Donaldson
-811 Philip Hahs
-308 Pejman Ludwig
-294 Hall To
-928 Chris Painter
-142 Asher Mari
-501 Reynaldo Galvan
-461 William Short
-692 Karthik Dundigalla
-349 Michael Caldera
-496 Indrawan Saputra
-467 James Hofstra
-872 Nicholas Smith
-257 Daniel Tokle
-671 Vincent Andrew
-465 upload a
-934 Patrick Rohloff
-537 Sean Callahan
-971 Ivan Roman
-300 Jaime Cabrera
-655 Ricardo Lucero
-83 Andrew Gillespie
-905 Brian Brick
-329 Victor Chan
-696 Harika Lekkala
-252 Kinjal Chatterjee
-43 Danny Chan
-726 Robert Kretschmar
-499 Scott Stetzko
-333 David Monson
-856 Garrett Kinum
-307 Lalit Barbuddhe
-940 Luis Corona
-167 Emily Osburn
-987 Christopher Garcia
-487 Hayden Donze
-877 Ciaran Downey
-920 Rin Kagura
-162 Harry Mora
-386 Shaun Feltman
-516 Kyle Dodson
-479 Andrew Gillespie
-6 Edwin Oak
-871 Kelly Siska
-422 Jeremey Ebenezer
-419 Jeffrey Citron
-872 Bryan Wong
-841 Kwang Na
-768 Seyed Farshid
-787 Tam Nguyen
-519 Jeffrey Dodd
-894 Andrew Hoang
-502 William English
-982 Jason Hellwig
-82 Tsu-Hsiang Cheng
-190 Quang Lam
-365 Juan Aguillon
-636 Chris Doan
-135 Brian Boland
-80 Gary Paolini
-351 Sven Eric
-420 Juan De
-21 Matias Jofre
-297 Andrew Mauricio
-526 Danny Chan
-100 John Lee
-854 Jenny Chau
-899 Nicholas Irikawa
-339 Brian Lam
-824 Laura Chiu
-158 Samuel Forrest
-106 Kenneth Davis
-750 Michael Francis
-32 Quang Nguyen
-387 Jose Delgado
+#include <pthread.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+
+/**
+ * The function called by the thread
+ * @param args - pointer to the thread local data
+ */
+void* threadFunc(void* args)
+{
+	
+	/* Print the thread id */
+	fprintf(stderr, "Hi, I am thread %u\n", (unsigned int)pthread_self());
+}
+
+int main(int argc, char** argv)
+{
+
+	/* Check the arguments */
+	if(argc < 2)
+	{
+		fprintf(stderr, "USAGE: %s <NUMBER OF THREADS>\n", argv[0]);
+		exit(-1);
+	}
+	
+	/* Grab the number of threads from the command line */
+	int numberOfThreads = atoi(argv[1]);
+	
+	/* Array of thread variables */
+	pthread_t threads[numberOfThreads];
+	
+	/* Lets create the threads */
+	for(int threadNum = 0; threadNum < numberOfThreads; ++threadNum)
+	{
+		/* Create the thread */
+		if(pthread_create(&threads[threadNum], NULL, threadFunc, NULL) < 0)
+		{
+			perror("pthread_create");
+			exit(-1);
+		}
+	}
+	
+	/* Wait for all threads to finish */
+	for(int threadNum = 0; threadNum < numberOfThreads; ++threadNum)
+	{
+		pthread_join(threads[threadNum], NULL);
+	}
+	
+	return 0;
+}
+

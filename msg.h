@@ -1,60 +1,69 @@
-#include "msg.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#include <string.h>
+#include <errno.h>
 
-/**
- * The key to use for the message queue
- * @param key - the key to use.
- * @return - the message queue id
- */
-int createMessageQueue(key_t key)
+
+/* The maximum length for a name */
+#define MAX_NAME_LEN 100
+
+/* The structure representing the message */
+struct message
 {
-	/* Creates a message queue */
-	int msqid = msgget(key, 0666 | IPC_CREAT);
+	/** IMPORTANT: every message structure must start with this **/
+	long messageType;
 	
-	/* Error occured */
-	if(msqid < 0)
+	/* A number */
+	int id;
+	
+	/* The first name */
+	char firstName[MAX_NAME_LEN];	
+	
+	/* The last name */
+	char lastName[MAX_NAME_LEN];
+	
+	/**
+ 	 * Prints a record.
+ 	 * @param fp - the file stream to print to
+ 	 */
+	void print(FILE* fp)
 	{
-		perror("msgget");
-		exit(-1);
+		fprintf(fp, "messageType=%ld id=%d  firstName=%s lastName=%s\n", 
+			messageType, id, firstName, lastName);
 	}
 	
-	return msqid;
-}
+};
+
+/* The client to server message type */
+#define CLIENT_TO_SERVER_MSG 1
+
+/* The message sent from server to client message type */
+#define SERVER_TO_CLIENT_MSG 2
 
 /**
  * The key to use for the message queue
  * @param key - the key to use
  * @return - the message queue id
  */
-int connectToMessageQueue(key_t key)
-{
-	/* Creates a message queue */
-	int msqid = msgget(key, 0666);
-	
-	/* Error occured */
-	if(msqid < 0)
-	{
-		perror("msgget");
-		exit(-1);
-	}
-	
-	return msqid;
+int createMessageQueue(key_t key);
 
-}
+/**
+ * The key to use for the message queue
+ * @param key - the key to use
+ * @return - the message queue id
+ */
+int connectToMessageQueue(key_t key);
+
 
 /**
  * Sends the message over the message queue
- * @param msqid - the message queue id
- * @param msg - the pointer to the message
+ * @param msg - the message queue id
+ * @param messagePtr - the pointer to the message
  */
-void sendMessage(const int& msqid, message& msg)
-{
-	/* Sends the message */
-	if(msgsnd(msqid, &msg, sizeof(msg) - sizeof(long), 0) < 0)
-	{
-		perror("msgsnd");
-		exit(-1);
-	}
-}
+void sendMessage(const int& msqid, message& msg);
 
 /**
  * Retrieves a message from the message queue
@@ -63,15 +72,5 @@ void sendMessage(const int& msqid, message& msg)
  * to store the message received.
  * @param messageType - the message type
  */
-void recvMessage(const int& msqid, message& msg, const int& messageType)
-{
-	/* Receive the message */
-	if(msgrcv(msqid, &msg, sizeof(msg) - sizeof(long), messageType, 0) < 0)
-	{
-		perror("msgrcv");
-		exit(-1);
-	}
-}
-
-
+void recvMessage(const int& msqid, message& msg, const int& messageType);
 

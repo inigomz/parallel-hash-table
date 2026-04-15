@@ -1,76 +1,91 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/ipc.h>
-#include <sys/msg.h>
-#include <string.h>
-#include <errno.h>
-
-
-/* The maximum length for a name */
-#define MAX_NAME_LEN 100
-
-/* The structure representing the message */
-struct message
-{
-	/** IMPORTANT: every message structure must start with this **/
-	long messageType;
-	
-	/* A number */
-	int id;
-	
-	/* The first name */
-	char firstName[MAX_NAME_LEN];	
-	
-	/* The last name */
-	char lastName[MAX_NAME_LEN];
-	
-	/**
- 	 * Prints a record.
- 	 * @param fp - the file stream to print to
- 	 */
-	void print(FILE* fp)
-	{
-		fprintf(fp, "messageType=%ld id=%d  firstName=%s lastName=%s\n", 
-			messageType, id, firstName, lastName);
-	}
-	
-};
-
-/* The client to server message type */
-#define CLIENT_TO_SERVER_MSG 1
-
-/* The message sent from server to client message type */
-#define SERVER_TO_CLIENT_MSG 2
-
-/**
- * The key to use for the message queue
- * @param key - the key to use
- * @return - the message queue id
- */
-int createMessageQueue(key_t key);
-
-/**
- * The key to use for the message queue
- * @param key - the key to use
- * @return - the message queue id
- */
-int connectToMessageQueue(key_t key);
-
-
-/**
- * Sends the message over the message queue
- * @param msg - the message queue id
- * @param messagePtr - the pointer to the message
- */
-void sendMessage(const int& msqid, message& msg);
-
-/**
- * Retrieves a message from the message queue
- * @param msqid - the message queue id
- * @param msg - the structure where
- * to store the message received.
- * @param messageType - the message type
- */
-void recvMessage(const int& msqid, message& msg, const int& messageType);
-
+621 Frida Kiriakos
+984 Derek Louie
+503 Philip Huynh
+204 Kyle Meyerhardt
+74 Noemi Quezada
+56 James Murphy
+400 Radley Obligacion
+132 Ahdel Rahimi
+196 Martin Rodriguez
+903 Ali Mahmud
+460 Dhanshri Sharma
+13 David Vu
+421 Joel Pedroza
+130 Brian Chung
+735 Stevie Baltazar
+143 Eshan Agheda
+549 Eric Donaldson
+811 Philip Hahs
+308 Pejman Ludwig
+294 Hall To
+928 Chris Painter
+142 Asher Mari
+501 Reynaldo Galvan
+461 William Short
+692 Karthik Dundigalla
+349 Michael Caldera
+496 Indrawan Saputra
+467 James Hofstra
+872 Nicholas Smith
+257 Daniel Tokle
+671 Vincent Andrew
+465 upload a
+934 Patrick Rohloff
+537 Sean Callahan
+971 Ivan Roman
+300 Jaime Cabrera
+655 Ricardo Lucero
+83 Andrew Gillespie
+905 Brian Brick
+329 Victor Chan
+696 Harika Lekkala
+252 Kinjal Chatterjee
+43 Danny Chan
+726 Robert Kretschmar
+499 Scott Stetzko
+333 David Monson
+856 Garrett Kinum
+307 Lalit Barbuddhe
+940 Luis Corona
+167 Emily Osburn
+987 Christopher Garcia
+487 Hayden Donze
+877 Ciaran Downey
+920 Rin Kagura
+162 Harry Mora
+386 Shaun Feltman
+516 Kyle Dodson
+479 Andrew Gillespie
+6 Edwin Oak
+871 Kelly Siska
+422 Jeremey Ebenezer
+419 Jeffrey Citron
+872 Bryan Wong
+841 Kwang Na
+768 Seyed Farshid
+787 Tam Nguyen
+519 Jeffrey Dodd
+894 Andrew Hoang
+502 William English
+982 Jason Hellwig
+82 Tsu-Hsiang Cheng
+190 Quang Lam
+365 Juan Aguillon
+636 Chris Doan
+135 Brian Boland
+80 Gary Paolini
+351 Sven Eric
+420 Juan De
+21 Matias Jofre
+297 Andrew Mauricio
+526 Danny Chan
+100 John Lee
+854 Jenny Chau
+899 Nicholas Irikawa
+339 Brian Lam
+824 Laura Chiu
+158 Samuel Forrest
+106 Kenneth Davis
+750 Michael Francis
+32 Quang Nguyen
+387 Jose Delgado
