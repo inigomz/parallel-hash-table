@@ -37,6 +37,7 @@ class hashTableCell
 {
 	/* Public members */
 	public:	
+	
 
 	/**
  	 * Initialize the mutex
@@ -44,6 +45,8 @@ class hashTableCell
 	hashTableCell()
 	{
 		/* Initialize the mutex using pthread_mutex_init() */
+		pthread_mutex_init(&cell, NULL);
+		printf("Mutex initialized");
 	}
 	
 	/**
@@ -52,6 +55,8 @@ class hashTableCell
 	~hashTableCell()
 	{
 		/* Deallocate the mutex using pthread_mutex_destroy() */
+		pthread_mutex_destroy(&cell);
+		printf("Mutex deallocated and destroyed");
 	}
 	
 	/**
@@ -60,6 +65,8 @@ class hashTableCell
 	void lockCell()
 	{
 		/*TODO: Add code for locking the cell mutex */
+		pthread_mutex_lock(&cell);
+		printf("Mutex locked");
 	}
 	
 	/**
@@ -68,6 +75,7 @@ class hashTableCell
 	void unlockCell()
 	{
 		/* TODO: Add code for unlocking the cell mutex */
+		pthread_mutex_unlock(&cell);
 	}
 
 		
@@ -79,7 +87,7 @@ class hashTableCell
 	/**
  	 * TODO: declare a cell mutex
  	 */
-	
+	pthread_mutex_t cell;
 };
 
 /* The number of cells in the hash table */
