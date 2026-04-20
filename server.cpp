@@ -111,16 +111,18 @@ list<int> idsToLookUpList;
 /**
  * TODO: Declare and initialize a mutex for protecting the idsToLookUpList.
  */
+	pthread_mutex_t idsToLookUpListMutex = PTHREAD_MUTEX_INITIALIZER;
 
 /**
  * TODO: declare and initialize the condition variable, threadPoolCondVar, 
  * for implementing a thread pool.
  */
+	pthread_cond_t threadPoolCondVar = PTHREAD_COND_INITIALIZER;
 
 /* TODO: Declare the mutex, threadPoolMutex, for protecting the thread pool
  * condition variable. 
  */
-
+	pthread_mutex_t threadPoolMutex = PTHREAD_MUTEX_INITIALIZER;
 
 /**
  * Prototype for createInserterThreads
