@@ -404,10 +404,11 @@ void wakeUpThread()
 	
 
 	/* TODO: Lock the mutex protecting threadPoolCondVar from race conditions */
-
+	pthread_mutex_lock(&threadPoolMutex);
 	/* TODO: Wake up a thread sleeping on threadPoolCondVar */
-	
+	pthread_cond_signal(&threadPoolCondVar);
 	/* TODO: Release the mutex protecting threadPoolCondVar from race conditions */
+	pthread_mutex_unlock(&threadPoolMutex);
 }
 
 /**
@@ -455,6 +456,7 @@ void processIncomingMessages()
 		addIdsToLookUp(msg.id);
 			
 		/* TODO: Wake up a thread to process the newly received id */
+		wakeUpThread();
 	}
 }
 
