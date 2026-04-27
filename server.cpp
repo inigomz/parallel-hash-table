@@ -418,6 +418,11 @@ void wakeUpThread()
 void createThreads(const int& numThreads)
 {
 	/** TODO: create numThreads threads that call threadPoolFunc() */
+	vector<pthread_t> threads(numThreads);
+	
+	for (int i = 0; i < numThreads; i++) {
+		pthread_create(&threads[i], NULL, threadPoolFunc, NULL );
+	}
 	
 }
 
