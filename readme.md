@@ -3,5 +3,5 @@
 * In order to avoid merge conflicts as much as we can, update this makefile so we know who is working on what. Always commit frequently.
   * Inigo: 
   * Anchal:
-  * Kevin: server.cpp
+  * Kevin:
   * Sola: server.cpp
