@@ -143,6 +143,8 @@ void cleanUp(int sig)
 {
 
 	/* Add code for deallocating the queue */
+	msgctl(msqid, IPC_RMID, NULL);  // deallocate the message queue
+    exit(0);
 }
 
 /**
@@ -420,6 +422,10 @@ void createInserterThreads()
 	/* TODO: create NUM_INSERTERS threads that add new elements to the hashtable
  	 * by calling addNewRecords(). 
  	 */
+
+	pthread_t inserters[NUM_INSERTERS];
+    for(int i = 0; i < NUM_INSERTERS; i++)
+        pthread_create(&inserters[i], NULL, addNewRecords, NULL);
 }
 
 
