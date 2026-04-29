@@ -119,7 +119,8 @@ list<int> idsToLookUpList;
  */
 	pthread_cond_t threadPoolCondVar = PTHREAD_COND_INITIALIZER;
 
-/* TODO: Declare the mutex, threadPoolMutex, for protecting the thread pool
+/**
+ * TODO: Declare the mutex, threadPoolMutex, for protecting the thread pool
  * condition variable. 
  */
 	pthread_mutex_t threadPoolMutex = PTHREAD_MUTEX_INITIALIZER;
@@ -143,7 +144,7 @@ void cleanUp(int sig)
 {
 
 	/* Add code for deallocating the queue */
-	msgctl(msqid, IPC_RMID, NULL);  // deallocate the message queue
+	msgctl(msqid, IPC_RMID, NULL);
     exit(0);
 }
 
@@ -202,6 +203,7 @@ void addToHashTable(const record& rec)
 	/**
  	 * TODO: grab mutex of the hash table cell
  	 */
+	hashTable.at(rec.id % NUMBER_OF_HASH_CELLS).lockCell();
 	
 	/* Hash, and save the record */
 	hashTable.at(rec.id % NUMBER_OF_HASH_CELLS).recordList.push_back(rec);
@@ -209,6 +211,7 @@ void addToHashTable(const record& rec)
 	/**
  	 * TODO: release mutex of the hashtable cell
  	 */
+	 hashTable.at(rec.id % NUMBER_OF_HASH_CELLS).unlockCell();
 	
 }
 
@@ -232,6 +235,7 @@ record getHashTableRecord(const int& id)
 	/**
  	 * TODO: grab mutex of the cell
  	 */
+	hashTableCellPtr->lockCell(); 
 	
 	/* Get the iterator to the list of records hashing to this location */
 	list<record>::iterator recIt = hashTableCellPtr->recordList.begin();
@@ -257,6 +261,7 @@ record getHashTableRecord(const int& id)
  	 * TODO: release mutex of the cell. Hint: call unlockCell() to release
      *       mutex protecting the cell.
  	 */
+	hashTableCellPtr->unlockCell();	
 	
 	return rec;
 }
@@ -315,6 +320,7 @@ int getIdsToLookUp()
 	int id = -1;
 	
 	/* TODO: Aquire the idsToLookUpListMutex mutex */
+	pthread_mutex_lock(&idsToLookUpListMutex);
 	
 	/* Remove id from the list if exists */
 	if(!idsToLookUpList.empty()) 
@@ -324,6 +330,7 @@ int getIdsToLookUp()
     }
 	
 	/* TODO: Release idsToLookUpListMutex  */
+	pthread_mutex_unlock(&idsToLookUpListMutex);
 	
 	return id;
 }
@@ -335,12 +342,13 @@ int getIdsToLookUp()
 void addIdsToLookUp(const int& id)
 {
 	/* TODO: Aquire idsToLookUpListMutex the list mutex */
-	
+	pthread_mutex_lock(&idsToLookUpListMutex);
 		
 	/* Add the element to look up */
 	idsToLookUpList.push_back(id);
 		
 	/* TODO: Release the idsToLookUpList  */
+	pthread_mutex_unlock(&idsToLookUpListMutex);
 }
 
 /**
@@ -357,6 +365,7 @@ void* threadPoolFunc(void* arg)
 	{
 
 		/* TODO: Lock the mutex protecting threadPoolCondVar from race conditions */
+		pthread_mutex_lock(&threadPoolMutex);
 		
 		/* Get the id to look up */
 		id = getIdsToLookUp();	
@@ -367,6 +376,7 @@ void* threadPoolFunc(void* arg)
 				
 			
 			/* TODO: Sleep on the condition variable threadPoolCondVar */
+			pthread_cond_wait(&threadPoolCondVar, &threadPoolMutex);
 			
 			/* Get the id to look up */
 			id = getIdsToLookUp();	
@@ -375,7 +385,7 @@ void* threadPoolFunc(void* arg)
 		
 		
 		/* TODO: Release the mutex protecting threadPoolCondVar from race conditions */
-		
+		pthread_mutex_unlock(&threadPoolMutex);
 			
 		/* Look up id */
 		record rec = getHashTableRecord(id);
@@ -396,10 +406,11 @@ void wakeUpThread()
 	
 
 	/* TODO: Lock the mutex protecting threadPoolCondVar from race conditions */
-
+	pthread_mutex_lock(&threadPoolMutex);
 	/* TODO: Wake up a thread sleeping on threadPoolCondVar */
-	
+	pthread_cond_signal(&threadPoolCondVar);
 	/* TODO: Release the mutex protecting threadPoolCondVar from race conditions */
+	pthread_mutex_unlock(&threadPoolMutex);
 }
 
 /**
@@ -409,6 +420,11 @@ void wakeUpThread()
 void createThreads(const int& numThreads)
 {
 	/** TODO: create numThreads threads that call threadPoolFunc() */
+	vector<pthread_t> threads(numThreads);
+	
+	for (int i = 0; i < numThreads; i++) {
+		pthread_create(&threads[i], NULL, threadPoolFunc, NULL );
+	}
 	
 }
 
@@ -451,6 +467,7 @@ void processIncomingMessages()
 		addIdsToLookUp(msg.id);
 			
 		/* TODO: Wake up a thread to process the newly received id */
+		wakeUpThread();
 	}
 }
 
@@ -506,6 +523,7 @@ int main(int argc, char** argv)
 	}
 	
 	/* TODO: install a signal handler for deallocating the message queue */	
+	signal(SIGINT, cleanUp);
 	
 	/* Populate the hash table */
 	populateHashTable(argv[1]);
