@@ -144,6 +144,8 @@ void cleanUp(int sig)
 {
 
 	/* Add code for deallocating the queue */
+	msgctl(msqid, IPC_RMID, NULL);
+    exit(0);
 }
 
 /**
@@ -436,6 +438,10 @@ void createInserterThreads()
 	/* TODO: create NUM_INSERTERS threads that add new elements to the hashtable
  	 * by calling addNewRecords(). 
  	 */
+
+	pthread_t inserters[NUM_INSERTERS];
+    for(int i = 0; i < NUM_INSERTERS; i++)
+        pthread_create(&inserters[i], NULL, addNewRecords, NULL);
 }
 
 
@@ -517,6 +523,7 @@ int main(int argc, char** argv)
 	}
 	
 	/* TODO: install a signal handler for deallocating the message queue */	
+	signal(SIGINT, cleanUp);
 	
 	/* Populate the hash table */
 	populateHashTable(argv[1]);
