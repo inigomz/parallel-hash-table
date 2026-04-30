@@ -21,7 +21,7 @@ Note: If message queue is not cleaned up properly, run:
    ipcrm -q <queue id shown by ipcs>
 
 Team Members:
-  * Inigo: 
+  * Inigo: inigoz@csu.fullerton.edu
   * Anchal:
   * Kevin Qi: kevinJp6526@csu.fullerton.edu
   * Sola Lhim: pooloom069@csu.fullerton.edu
