@@ -46,7 +46,7 @@ class hashTableCell
 	{
 		/* Initialize the mutex using pthread_mutex_init() */
 		pthread_mutex_init(&cell, NULL);
-		printf("Mutex initialized");
+		//printf("Mutex initialized");
 	}
 	
 	/**
@@ -56,7 +56,7 @@ class hashTableCell
 	{
 		/* Deallocate the mutex using pthread_mutex_destroy() */
 		pthread_mutex_destroy(&cell);
-		printf("Mutex deallocated and destroyed");
+		//printf("Mutex deallocated and destroyed");
 	}
 	
 	/**
@@ -66,7 +66,7 @@ class hashTableCell
 	{
 		/*TODO: Add code for locking the cell mutex */
 		pthread_mutex_lock(&cell);
-		printf("Mutex locked");
+		//printf("Mutex locked");
 	}
 	
 	/**
